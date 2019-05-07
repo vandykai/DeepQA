@@ -220,8 +220,10 @@ class Chatbot:
             print("The End! Thanks for using this program")
 
     def myy(self, a,b):
-        print(a)
-        print(b)
+        print(type(a))
+        print(type(b))
+        print(a.shape)
+        print(b.shape)
         return sentence_bleu(a, b)
     def mainTrain(self, sess):
         """ Training loop

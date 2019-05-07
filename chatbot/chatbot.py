@@ -219,6 +219,10 @@ class Chatbot:
             self.sess.close()
             print("The End! Thanks for using this program")
 
+    def myy(self, a,b):
+        print(a)
+        print(b)
+        return sentence_bleu(a, b)
     def mainTrain(self, sess):
         """ Training loop
         Args:
@@ -254,7 +258,7 @@ class Chatbot:
                     ops, feedDict = self.model.step(nextBatch)
                     #assert len(ops) == 3  # training, loss
                     _, outputs, loss, summary = sess.run(ops + (mergedSummaries,), feedDict)
-                    bleu = math_ops.reduce_mean([print(target,output.tolist()),sentence_bleu([target], output.tolist()) for target,output in zip(nextBatch.targetSeqs,outputs)])
+                    bleu = math_ops.reduce_mean([self.myy([target], output.tolist()) for target,output in zip(nextBatch.targetSeqs,outputs)])
                     self.writer.add_summary(summary, self.globStep)
                     self.globStep += 1
 

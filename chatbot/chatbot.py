@@ -244,7 +244,7 @@ class Chatbot:
 
                 batches = self.textData.getBatches()
                 train_batches = batches[:len(batches)//10*8]
-                 = batches[len(batches)//10*8:]
+                valid_batches = batches[len(batches)//10*8:]
                 # TODO: Avalid_batcheslso update learning parameters eventually
 
                 tic = datetime.datetime.now()

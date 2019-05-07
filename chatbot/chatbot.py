@@ -27,6 +27,7 @@ import tensorflow as tf
 import numpy as np
 import math
 from tensorflow.python.ops import math_ops
+from nltk.translate.bleu_score import sentence_bleu
 
 from tqdm import tqdm  # Progress bar
 from tensorflow.python import debug as tf_debug

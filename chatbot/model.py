@@ -20,8 +20,6 @@ Model to predict the next sentence given an input sequence
 """
 
 import tensorflow as tf
-from tensorflow.python.ops import math_ops
-from nltk.translate.bleu_score import sentence_bleu
 
 from chatbot.textdata import Batch
 
@@ -184,11 +182,10 @@ class Model:
         # training and reduce memory usage. Other solution, use sampling softmax
 
         # For testing only
-        if self.args.test:
-            if not outputProjection:
-                self.outputs = decoderOutputs
-            else:
-                self.outputs = [outputProjection(output) for output in decoderOutputs]
+        if not outputProjection:
+            self.outputs = decoderOutputs
+        else:
+            self.outputs = [outputProjection(output) for output in decoderOutputs]
 
             # TODO: Attach a summary to visualize the output
 

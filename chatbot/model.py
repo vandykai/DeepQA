@@ -203,7 +203,7 @@ class Model:
                 self.textData.getVocabularySize(),
                 softmax_loss_function= sampledSoftmax if outputProjection else None  # If None, use default SoftMax
             )
-            self.bleu = math_ops.reduce_mean([sentence_bleu([target], output) for target,output in zip(self.decoderTargets,decoderOutputs)])
+            self.bleu = tf.reduce_mean([sentence_bleu([target], output) for target,output in zip(self.decoderTargets,decoderOutputs)])
             tf.summary.scalar('loss', self.lossFct)  # Keep track of the cost
             tf.summary.scalar('bleu', self.bleu)  # Keep track of the cost
             # Initialize the optimizer

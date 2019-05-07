@@ -20,6 +20,8 @@ Model to predict the next sentence given an input sequence
 """
 
 import tensorflow as tf
+from tensorflow.python.ops import math_ops
+from nltk.translate.bleu_score import sentence_bleu
 
 from chatbot.textdata import Batch
 
@@ -99,7 +101,7 @@ class Model:
         self.lossFct = None
         self.optOp = None
         self.outputs = None  # Outputs of the network, list of probability for each words
-
+        self.bleu = None
         # Construct the graphs
         self.buildNetwork()
 
@@ -201,8 +203,9 @@ class Model:
                 self.textData.getVocabularySize(),
                 softmax_loss_function= sampledSoftmax if outputProjection else None  # If None, use default SoftMax
             )
+            self.bleu = math_ops.reduce_mean([sentence_bleu([target], output) for target,output in zip(self.decoderTargets,decoderOutputs)])
             tf.summary.scalar('loss', self.lossFct)  # Keep track of the cost
-
+            tf.summary.scalar('bleu', self.bleu)  # Keep track of the cost
             # Initialize the optimizer
             opt = tf.train.AdamOptimizer(
                 learning_rate=self.args.learningRate,
@@ -233,7 +236,7 @@ class Model:
                 feedDict[self.decoderTargets[i]] = batch.targetSeqs[i]
                 feedDict[self.decoderWeights[i]] = batch.weights[i]
 
-            ops = (self.optOp, self.lossFct)
+            ops = (self.optOp, self.lossFct, self.bleu)
         else:  # Testing (batchSize == 1)
             for i in range(self.args.maxLengthEnco):
                 feedDict[self.encoderInputs[i]]  = batch.encoderSeqs[i]

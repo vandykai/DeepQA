@@ -254,7 +254,7 @@ class Chatbot:
                     ops, feedDict = self.model.step(nextBatch)
                     #assert len(ops) == 3  # training, loss
                     _, outputs, loss, summary = sess.run(ops + (mergedSummaries,), feedDict)
-                    bleu = math_ops.reduce_mean([sentence_bleu([target], output) for target,output in zip(nextBatch.targetSeqs,outputs)])
+                    bleu = math_ops.reduce_mean([sentence_bleu([target.tolist()], output.tolist()) for target,output in zip(nextBatch.targetSeqs,outputs)])
                     self.writer.add_summary(summary, self.globStep)
                     self.globStep += 1
 

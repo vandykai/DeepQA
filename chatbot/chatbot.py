@@ -222,8 +222,8 @@ class Chatbot:
     def myy(self, a,b):
         print(type(a))
         print(type(b))
-        print(a.shape)
-        print(b.shape)
+        print(np.array(a).shape)
+        print(np.array(b).shape)
         return sentence_bleu(a, b)
     def mainTrain(self, sess):
         """ Training loop

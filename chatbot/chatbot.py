@@ -219,12 +219,6 @@ class Chatbot:
             self.sess.close()
             print("The End! Thanks for using this program")
 
-    def myy(self, a,b):
-        print(type(a))
-        print(type(b))
-        print(np.array(a).shape)
-        print(np.array(b).shape)
-        return sentence_bleu(a, b)
     def mainTrain(self, sess):
         """ Training loop
         Args:
@@ -260,7 +254,7 @@ class Chatbot:
                     ops, feedDict = self.model.step(nextBatch)
                     #assert len(ops) == 3  # training, loss
                     _, outputs, loss, summary = sess.run(ops + (mergedSummaries,), feedDict)
-                    bleu = np.mean([self.myy([target], np.max(output.tolist(),1)) for target,output in zip(nextBatch.targetSeqs,outputs)])
+                    bleu = np.mean([sentence_bleu([target], np.max(output.tolist(),1)) for target,output in zip(nextBatch.targetSeqs,outputs)])
                     self.writer.add_summary(summary, self.globStep)
                     self.globStep += 1
 

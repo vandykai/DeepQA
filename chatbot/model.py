@@ -181,16 +181,14 @@ class Model:
         # TODO: When the LSTM hidden size is too big, we should project the LSTM output into a smaller space (4086 => 2046): Should speed up
         # training and reduce memory usage. Other solution, use sampling softmax
 
-        # For testing only
+        # TODO: Attach a summary to visualize the output
         if not outputProjection:
             self.outputs = decoderOutputs
         else:
             self.outputs = [outputProjection(output) for output in decoderOutputs]
 
-            # TODO: Attach a summary to visualize the output
-
         # For training only
-        else:
+        if not self.args.test:
             # Finally, we define the loss function
             self.lossFct = tf.contrib.legacy_seq2seq.sequence_loss(
                 decoderOutputs,

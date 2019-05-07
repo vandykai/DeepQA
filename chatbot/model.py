@@ -101,7 +101,6 @@ class Model:
         self.lossFct = None
         self.optOp = None
         self.outputs = None  # Outputs of the network, list of probability for each words
-        self.bleu = None
         # Construct the graphs
         self.buildNetwork()
 
@@ -203,9 +202,8 @@ class Model:
                 self.textData.getVocabularySize(),
                 softmax_loss_function= sampledSoftmax if outputProjection else None  # If None, use default SoftMax
             )
-            self.bleu = tf.reduce_mean([sentence_bleu([target], output) for target,output in zip(self.decoderTargets,decoderOutputs)])
+            
             tf.summary.scalar('loss', self.lossFct)  # Keep track of the cost
-            tf.summary.scalar('bleu', self.bleu)  # Keep track of the cost
             # Initialize the optimizer
             opt = tf.train.AdamOptimizer(
                 learning_rate=self.args.learningRate,
@@ -236,7 +234,7 @@ class Model:
                 feedDict[self.decoderTargets[i]] = batch.targetSeqs[i]
                 feedDict[self.decoderWeights[i]] = batch.weights[i]
 
-            ops = (self.optOp, self.lossFct, self.bleu)
+            ops = (self.optOp, self.outputs, self.lossFct)
         else:  # Testing (batchSize == 1)
             for i in range(self.args.maxLengthEnco):
                 feedDict[self.encoderInputs[i]]  = batch.encoderSeqs[i]

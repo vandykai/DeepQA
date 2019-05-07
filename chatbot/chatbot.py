@@ -26,6 +26,7 @@ import os  # Files management
 import tensorflow as tf
 import numpy as np
 import math
+from tensorflow.python.ops import math_ops
 
 from tqdm import tqdm  # Progress bar
 from tensorflow.python import debug as tf_debug
@@ -243,15 +244,16 @@ class Chatbot:
 
                 batches = self.textData.getBatches()
                 train_batches = batches[:len(batches)//10*8]
-                valid_batches = batches[len(batches)//10*8:]
-                # TODO: Also update learning parameters eventually
+                 = batches[len(batches)//10*8:]
+                # TODO: Avalid_batcheslso update learning parameters eventually
 
                 tic = datetime.datetime.now()
                 for nextBatch in tqdm(train_batches, desc="Training"):
                     # Training pass
                     ops, feedDict = self.model.step(nextBatch)
                     assert len(ops) == 2  # training, loss
-                    _, loss,bleu, summary = sess.run(ops + (mergedSummaries,), feedDict)
+                    _, outputs, loss, summary = sess.run(ops + (mergedSummaries,), feedDict)
+                    bleu = math_ops.reduce_mean([sentence_bleu([target], output) for target,output in zip(nextBatch.targetSeqs,outputs)])
                     self.writer.add_summary(summary, self.globStep)
                     self.globStep += 1
 

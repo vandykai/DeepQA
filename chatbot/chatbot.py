@@ -120,7 +120,7 @@ class Chatbot:
         # Network options (Warning: if modifying something here, also make the change on save/loadParams() )
         nnArgs = parser.add_argument_group('Network options', 'architecture related option')
         nnArgs.add_argument('--hiddenSize', type=int, default=512, help='number of hidden units in each RNN cell')
-        nnArgs.add_argument('--numLayers', type=int, default=2, help='number of rnn layers')
+        nnArgs.add_argument('--numLayers', type=int, default=1, help='number of rnn layers')
         nnArgs.add_argument('--softmaxSamples', type=int, default=0, help='Number of samples in the sampled softmax loss function. A value of 0 deactivates sampled softmax')
         nnArgs.add_argument('--initEmbeddings', action='store_true', help='if present, the program will initialize the embeddings with pre-trained word2vec vectors')
         nnArgs.add_argument('--embeddingSize', type=int, default=64, help='embedding size of the word representation')
@@ -234,7 +234,7 @@ class Chatbot:
         # If restoring a model, restore the progression bar ? and current batch ?
 
         print('Start training (press Ctrl+C to save and exit)...')
-
+        all_loss = []
         try:  # If the user exit while training, we still try to save the model
             for e in range(self.args.numEpochs):
 
@@ -251,6 +251,7 @@ class Chatbot:
                     ops, feedDict = self.model.step(nextBatch)
                     assert len(ops) == 2  # training, loss
                     _, loss, summary = sess.run(ops + (mergedSummaries,), feedDict)
+                    all_loss.append(loss)
                     self.writer.add_summary(summary, self.globStep)
                     self.globStep += 1
 
@@ -268,7 +269,9 @@ class Chatbot:
                 print("Epoch finished in {}".format(toc-tic))  # Warning: Will overflow if an epoch takes more than 24 hours, and the output isn't really nicer
         except (KeyboardInterrupt, SystemExit):  # If the user press Ctrl+C while testing progress
             print('Interruption detected, exiting the program...')
-
+        print(all_loss)
+        with open('result.txt', 'w') as f:
+            f.write(str(all_loss))
         self._saveSession(sess)  # Ultimate saving before complete exit
 
     def predictTestset(self, sess):
